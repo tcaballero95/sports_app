@@ -203,8 +203,8 @@ with tabs[2]:
 with tabs[3]:
 	st.header("Registro")
 	st.write("Visualiza tus actividades realizadas")
-	grupo = st.selectbox("Selecciona grupo", options=["Josse", "Tomi", "Ambos"])
 	registro_actividades = get_registro_actividades()
+	grupo = st.selectbox("Selecciona grupo", options=["Josse", "Tomi", "Ambos"])
 	if grupo != "Ambos":
 		registro_actividades = [item for item in registro_actividades if item['nombre'] == grupo]
 	if registro_actividades:
