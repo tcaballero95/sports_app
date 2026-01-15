@@ -5,3 +5,4 @@ numpy>=2.0
 plotly>=6.5
 pydeck>=0.9
 pyarrow>=21
+supabase>=2.27
