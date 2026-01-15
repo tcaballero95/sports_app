@@ -24,6 +24,8 @@ def get_registro_recompensas():
 
 # Insertar nueva actividad en registro_actividades
 def insertar_registro_actividad(nombre, actividad, fecha, puntos):
+	if hasattr(fecha, "isoformat"):
+		fecha = fecha.isoformat()
 	supabase.table("registro_actividades").insert({
 		"nombre": nombre,
 		"actividad": actividad,
