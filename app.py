@@ -153,7 +153,7 @@ with tabs[1]:
 		st.dataframe(
 			actividades_df,
 			column_config={
-				"Actividad": st.column_config.Column(width="large"),
+				"Actividad": st.column_config.Column(width="medium"),
 				"Puntos": st.column_config.Column(width="small")
 			},
 			width='stretch'
@@ -182,7 +182,7 @@ with tabs[2]:
 		st.dataframe(
 			recompensas_df,
 			column_config={
-				"Recompensa": st.column_config.Column(width="large"),
+				"Recompensa": st.column_config.Column(width="medium"),
 				"Costo en Puntos": st.column_config.Column(width="small")
 			},
 			width='stretch'
@@ -209,7 +209,7 @@ with tabs[3]:
 		registro_actividades = [item for item in registro_actividades if item['nombre'] == grupo]
 	if registro_actividades:
 		registro_actividades_df = pd.DataFrame(registro_actividades)
-		registro_actividades_df = registro_actividades_df.drop(columns=['nombre'])
+		registro_actividades_df = registro_actividades_df.drop(columns=['id'])
 		registro_actividades_df['fecha'] = pd.to_datetime(registro_actividades_df['fecha'])
 		registro_actividades_df = registro_actividades_df.sort_values(by='fecha', ascending=False).set_index('fecha')
 		registro_actividades_df.index = registro_actividades_df.index.date
