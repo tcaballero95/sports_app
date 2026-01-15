@@ -1,26 +1,44 @@
 import streamlit as st
-import json
 import pandas as pd
 from datetime import datetime, timedelta
 import plotly.express as px
+from db import supabase
 
-# Read data from JSON files
-with open('actividades.json', 'r') as f:
-	actividades = json.load(f)
+# Leer actividades desde Supabase
+def get_actividades():
+	data = supabase.table("actividades").select("*").execute().data
+	return {item['nombre']: item['puntos'] for item in data}
 
-with open('recompensas.json', 'r') as f:
-	recompensas = json.load(f)
+# Leer recompensas desde Supabase
+def get_recompensas():
+	data = supabase.table("recompensas").select("*").execute().data
+	return {item['nombre']: item['costo'] for item in data}
 
-def cargar_registro(path):
-	try:
-		with open(path, 'r') as f:
-			return json.load(f)
-	except json.JSONDecodeError:
-		return []
-	except FileNotFoundError:
-		return []
+# Leer registro de actividades desde Supabase
+def get_registro_actividades():
+	return supabase.table("registro_actividades").select("*").execute().data
 
+# Leer registro de recompensas desde Supabase
+def get_registro_recompensas():
+	return supabase.table("registro_recompensas").select("*").execute().data
 
+# Insertar nueva actividad en registro_actividades
+def insertar_registro_actividad(nombre, actividad, fecha, puntos):
+	supabase.table("registro_actividades").insert({
+		"nombre": nombre,
+		"actividad": actividad,
+		"fecha": fecha,
+		"puntos": puntos
+	}).execute()
+
+# Insertar nuevo canje en registro_recompensas
+def insertar_registro_recompensa(nombre, recompensa, costo):
+	supabase.table("registro_recompensas").insert({
+		"nombre": nombre,
+		"recompensa": recompensa,
+		"costo": costo,
+		"fecha": datetime.now().date().isoformat()
+	}).execute()
 
 def conteo_puntos(registro):
 	return sum(item['puntos'] for item in registro)
@@ -49,8 +67,10 @@ with tabs[0]:
 
 	st.divider()
 
-	registro_actividades = cargar_registro('registro_actividades.json')
-	registro_recompensas = cargar_registro('registro_recompensas.json')
+	actividades = get_actividades()
+	recompensas = get_recompensas()
+	registro_actividades = get_registro_actividades()
+	registro_recompensas = get_registro_recompensas()
 
 	total_puntos_actividades = conteo_puntos(registro_actividades)
 	total_puntos_recompensas = conteo_puntos(registro_recompensas)
@@ -126,6 +146,7 @@ with tabs[1]:
 	st.header("Actividades")
 	st.write("Aquí puedes ver y registrar tus actividades deportivas.")
 	with st.expander("Listado de actividades disponibles", expanded=False):
+		actividades = get_actividades()
 		actividades_df = pd.DataFrame(list(actividades.items()), columns=["Actividad", "Puntos"]).set_index("Actividad")
 		st.dataframe(
 			actividades_df,
@@ -134,27 +155,18 @@ with tabs[1]:
 				"Puntos": st.column_config.Column(width="small")
 			}
 		)
-		
+    
 	with st.form("registro_actividad_form", border=False):
 		st.subheader("Registrar Nueva Actividad")
 		nombre = st.selectbox("Quién realizó la actividad?", options=["Josse", "Tomi"])
+		actividades = get_actividades()
 		actividad = st.selectbox("Selecciona la actividad", list(actividades.keys()))
 		fecha = st.date_input("Fecha de la actividad")
 		submit_button = st.form_submit_button("Registrar Actividad")
 
 		if submit_button:
-			registro_actividades = cargar_registro('registro_actividades.json')
 			puntos_obtenidos = actividades[actividad]
-			# Registar en json registro_actividades
-			registro_actividades.append({
-				"nombre": nombre,
-				"actividad": actividad,
-				"fecha": fecha,
-				"puntos": puntos_obtenidos
-			})
-			# Write back to JSON file
-			with open('registro_actividades.json', 'w') as f:
-				json.dump(registro_actividades, f, default=str, indent=4)
+			insertar_registro_actividad(nombre, actividad, fecha, puntos_obtenidos)
 			st.success(f"Actividad '{actividad}' registrada para el {fecha}. Has obtenido {puntos_obtenidos} puntos.")
 		
 
@@ -162,6 +174,7 @@ with tabs[2]:
 	st.header("Recompensas")
 	st.write("Consulta las recompensas disponibles y canjea tus puntos.")
 	with st.expander("Listado de recompensas disponibles", expanded=False):
+		recompensas = get_recompensas()
 		recompensas_df = pd.DataFrame(list(recompensas.items()), columns=["Recompensa", "Costo en Puntos"]).set_index("Recompensa")
 		st.dataframe(
 			recompensas_df,
@@ -173,18 +186,13 @@ with tabs[2]:
 
 	with st.form("canjear_recompensa_form", border=False):
 		st.subheader("Canjear Recompensa")
+		nombre = st.selectbox("Quién canjea la recompensa?", options=["Josse", "Tomi"])
+		recompensas = get_recompensas()
 		recompensa = st.selectbox("Selecciona la recompensa", list(recompensas.keys()))
 		submit_button = st.form_submit_button("Canjear Recompensa")
 		if submit_button:
-			registro_recompensas = cargar_registro('registro_recompensas.json')
-			# Registar en json registro_recompensas
-			registro_recompensas.append({
-				"recompensa": recompensa,
-				"costo": recompensas[recompensa]
-			})
-			# Write back to JSON file
-			with open('registro_recompensas.json', 'w') as f:
-				json.dump(registro_recompensas, f, default=str, indent=4)
+			costo = recompensas[recompensa]
+			insertar_registro_recompensa(nombre, recompensa, costo)
 			st.success(f"Recompensa '{recompensa}' canjeada exitosamente.")
 		
 
@@ -192,7 +200,7 @@ with tabs[3]:
 	st.header("Registro")
 	st.write("Visualiza tus actividades realizadas")
 	grupo = st.selectbox("Selecciona grupo", options=["Josse", "Tomi", "Ambos"])
-	registro_actividades = cargar_registro('registro_actividades.json')
+	registro_actividades = get_registro_actividades()
 	if grupo != "Ambos":
 		registro_actividades = [item for item in registro_actividades if item['nombre'] == grupo]
 	if registro_actividades:

@@ -1,0 +1,9 @@
+# Ignorar archivos de configuración y scripts sensibles
+sbase.py
+traspaso_json_a_supabase.py
+.env
+secrets.env
+# Otros archivos comunes a ignorar
+__pycache__/
+*.pyc
+.DS_Store
