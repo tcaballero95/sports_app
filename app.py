@@ -153,7 +153,8 @@ with tabs[1]:
 			column_config={
 				"Actividad": st.column_config.Column(width="large"),
 				"Puntos": st.column_config.Column(width="small")
-			}
+			},
+			width='stretch'
 		)
     
 	with st.form("registro_actividad_form", border=False):
@@ -181,7 +182,8 @@ with tabs[2]:
 			column_config={
 				"Recompensa": st.column_config.Column(width="large"),
 				"Costo en Puntos": st.column_config.Column(width="small")
-			}
+			},
+			width='stretch'
 		)
 
 	with st.form("canjear_recompensa_form", border=False):
@@ -215,7 +217,8 @@ with tabs[3]:
 				"nombre": st.column_config.Column("Nombre", width="small"),
 				"actividad": st.column_config.Column("Actividad", width="medium"),
 				"puntos": st.column_config.Column("Puntos", width="small"),
-			}
+			},
+			width='stretch'
 		)
 	else:
 		st.info("No hay actividades registradas para el grupo seleccionado.")
