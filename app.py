@@ -71,17 +71,23 @@ with tabs[0]:
 			pd.date_range(datetime.now().date() - timedelta(days=6), datetime.now().date()), fill_value=0
 		)
 		puntos_7d_df_daily.index = puntos_7d_df_daily.index.date  # Asegura que el índice sea solo date
+		df_plot = puntos_7d_df_daily.reset_index()
+		df_plot['tooltip'] = df_plot.apply(lambda row: f"{row['index'].strftime('%d %b')}<br>{int(row['Puntos'])} puntos", axis=1)
 		fig = px.bar(
-			puntos_7d_df_daily.reset_index(),
+			df_plot,
 			x='index',
 			y='Puntos',
 			labels={'Fecha': 'Fecha', 'Puntos': 'Puntos'},
 			height=200,
-			color_discrete_sequence=["#2E9145"]
+			color_discrete_sequence=["#2E9145"],
+			custom_data=['tooltip']
 		)
 		dias = pd.date_range(datetime.now().date() - timedelta(days=6), datetime.now().date())
 		meses_esp = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 		ticktext = [d.strftime('%d ') + meses_esp[d.month-1] for d in dias]
+		fig.update_traces(
+			hovertemplate='%{customdata[0]}'
+		)
 		fig.update_layout(
 			xaxis_tickformat='%d %b',
 			xaxis_title=None,
@@ -95,7 +101,7 @@ with tabs[0]:
 				ticktext=ticktext
 			)
 		)
-		st.plotly_chart(fig, width='stretch', config={"displayModeBar": False})
+		st.plotly_chart(fig, width='stretch', config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False})
 
 	with cont2:
 		st.markdown(f"""
