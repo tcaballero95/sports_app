@@ -72,7 +72,7 @@ with tabs[0]:
 		)
 		puntos_7d_df_daily.index = puntos_7d_df_daily.index.date  # Asegura que el índice sea solo date
 		df_plot = puntos_7d_df_daily.reset_index()
-		df_plot['tooltip'] = df_plot.apply(lambda row: f"{row['index'].strftime('%d %b')}<br>{int(row['Puntos'])} puntos", axis=1)
+		df_plot['tooltip'] = df_plot.apply(lambda row: f"{row['index'].strftime('%d-%m-%Y')}<br>{int(row['Puntos'])} puntos", axis=1)
 		fig = px.bar(
 			df_plot,
 			x='index',
@@ -95,13 +95,24 @@ with tabs[0]:
 			bargap=0.2,
 			margin=dict(t=0, b=0, l=0, r=0),
 			title=None,
+			dragmode=False,               # sin pan, sin box select, sin lasso
+    		hovermode="closest",          # o "x unified" si quieres
 			xaxis=dict(
 				tickmode='array',
 				tickvals=[d.strftime('%Y-%m-%d') for d in dias],
 				ticktext=ticktext
 			)
 		)
-		st.plotly_chart(fig, width='stretch', config={"displayModeBar": False, "scrollZoom": False, "doubleClick": False})
+		fig.update_xaxes(fixedrange=True)
+		fig.update_yaxes(fixedrange=True)
+		# zoom, pan, select, zoomIn, zoomOut, autoScale, resetScale False
+		st.plotly_chart(fig, width='stretch', config = {
+			"staticPlot": False,          # IMPORTANTE: debe ser False para que exista hover
+			"displayModeBar": False,      # oculta la barra de herramientas
+			"scrollZoom": False,          # desactiva zoom con scroll
+			"doubleClick": False,         # desactiva doble click
+			"showTips": False
+		})
 
 	with cont2:
 		st.markdown(f"""
