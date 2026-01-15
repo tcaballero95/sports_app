@@ -1,0 +1,62 @@
+[
+  {
+    "nombre": "Josse",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-12",
+    "puntos": 5
+  },
+  {
+    "nombre": "Josse",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-13",
+    "puntos": 5
+  },
+  {
+    "nombre": "Josse",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-14",
+    "puntos": 5
+  },
+  {
+    "nombre": "Tomi",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-14",
+    "puntos": 5
+  },
+  {
+    "nombre": "Tomi",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-13",
+    "puntos": 5
+  },
+  {
+    "nombre": "Tomi",
+    "actividad": "Ejercicio ma\u00f1anero",
+    "fecha": "2026-01-12",
+    "puntos": 5
+  },
+  {
+    "nombre": "Josse",
+    "actividad": "Gym",
+    "fecha": "2026-01-13",
+    "puntos": 15
+  },
+  {
+    "nombre": "Josse",
+    "actividad": "Caminar 10.000 pasos",
+    "fecha": "2026-01-13",
+    "puntos": 5
+  },
+  {
+    "nombre": "Tomi",
+    "actividad": "F\u00fatbol",
+    "fecha": "2026-01-12",
+    "puntos": 10
+  },
+  {
+    "nombre": "Tomi",
+    "actividad": "F\u00fatbol",
+    "fecha": "2026-01-13",
+    "puntos": 10
+  }
+]
