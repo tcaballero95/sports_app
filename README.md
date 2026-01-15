@@ -22,7 +22,7 @@ Aplicación minimalista para el registro y seguimiento de actividades deportivas
    ```
 2. (Opcional) Crea y activa un entorno virtual o conda:
    ```bash
-   conda create -n sports_app_env python=3.11
+   conda create -n sports_app_env python=3.14
    conda activate sports_app_env
    ```
 3. Instala las dependencias:
