@@ -20,8 +20,7 @@ def cargar_registro(path):
 	except FileNotFoundError:
 		return []
 
-registro_actividades = cargar_registro('registro_actividades.json')
-registro_recompensas = cargar_registro('registro_recompensas.json')
+
 
 def conteo_puntos(registro):
 	return sum(item['puntos'] for item in registro)
@@ -33,7 +32,7 @@ st.set_page_config(page_title="Sports Activities Tracking App", layout="centered
 st.title("Sports Activities Tracking App")
 
 # Tabs
-tabs = st.tabs(["Overview", "Actividades", "Recompensas"])
+tabs = st.tabs(["Overview", "Actividades", "Recompensas", "Registro"])
 
 with tabs[0]:
 	st.header("Overview")
@@ -49,6 +48,9 @@ with tabs[0]:
 	)
 
 	st.divider()
+
+	registro_actividades = cargar_registro('registro_actividades.json')
+	registro_recompensas = cargar_registro('registro_recompensas.json')
 
 	total_puntos_actividades = conteo_puntos(registro_actividades)
 	total_puntos_recompensas = conteo_puntos(registro_recompensas)
@@ -103,7 +105,6 @@ with tabs[0]:
 		""", unsafe_allow_html=True)
 	
 
-
 with tabs[1]:
 	st.header("Actividades")
 	st.write("Aquí puedes ver y registrar tus actividades deportivas.")
@@ -125,6 +126,7 @@ with tabs[1]:
 		submit_button = st.form_submit_button("Registrar Actividad")
 
 		if submit_button:
+			registro_actividades = cargar_registro('registro_actividades.json')
 			puntos_obtenidos = actividades[actividad]
 			# Registar en json registro_actividades
 			registro_actividades.append({
@@ -137,6 +139,7 @@ with tabs[1]:
 			with open('registro_actividades.json', 'w') as f:
 				json.dump(registro_actividades, f, default=str, indent=4)
 			st.success(f"Actividad '{actividad}' registrada para el {fecha}. Has obtenido {puntos_obtenidos} puntos.")
+		
 
 with tabs[2]:
 	st.header("Recompensas")
@@ -156,6 +159,7 @@ with tabs[2]:
 		recompensa = st.selectbox("Selecciona la recompensa", list(recompensas.keys()))
 		submit_button = st.form_submit_button("Canjear Recompensa")
 		if submit_button:
+			registro_recompensas = cargar_registro('registro_recompensas.json')
 			# Registar en json registro_recompensas
 			registro_recompensas.append({
 				"recompensa": recompensa,
@@ -167,6 +171,26 @@ with tabs[2]:
 			st.success(f"Recompensa '{recompensa}' canjeada exitosamente.")
 		
 
-
-
-
+with tabs[3]:
+	st.header("Registro")
+	st.write("Visualiza tus actividades realizadas")
+	grupo = st.selectbox("Selecciona grupo", options=["Josse", "Tomi", "Ambos"])
+	registro_actividades = cargar_registro('registro_actividades.json')
+	if grupo != "Ambos":
+		registro_actividades = [item for item in registro_actividades if item['nombre'] == grupo]
+	if registro_actividades:
+		registro_actividades_df = pd.DataFrame(registro_actividades)
+		registro_actividades_df = registro_actividades_df.drop(columns=['nombre'])
+		registro_actividades_df['fecha'] = pd.to_datetime(registro_actividades_df['fecha'])
+		registro_actividades_df = registro_actividades_df.sort_values(by='fecha', ascending=False).set_index('fecha')
+		registro_actividades_df.index = registro_actividades_df.index.date
+		st.dataframe(
+			registro_actividades_df,
+			column_config={
+				"nombre": st.column_config.Column("Nombre", width="small"),
+				"actividad": st.column_config.Column("Actividad", width="medium"),
+				"puntos": st.column_config.Column("Puntos", width="small"),
+			}
+		)
+	else:
+		st.info("No hay actividades registradas para el grupo seleccionado.")
